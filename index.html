@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>re-seND — 敘事實踐 × 腦神經多元</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23c17b5c'/%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 26 L88 26'/%3E%3Cpath d='M12 26 L50 56'/%3E%3Cpath d='M88 26 L60 88'/%3E%3Cpath d='M50 56 L60 88'/%3E%3C/g%3E%3C/svg%3E" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Nunito+Sans:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #faf6f0;
+      --cream-2: #f3ece1;
+      --surface: #ffffff;
+      --terracotta: #c17b5c;
+      --terracotta-deep: #a5654a;
+      --terracotta-soft: #f2e0d6;
+      --olive: #7d8a6a;
+      --olive-soft: #e4e8dc;
+      --sand: #d9b382;
+      --sand-soft: #f3e7d3;
+      --clay: #b08968;
+      --whatsapp: #25d366;
+      --text: #4a4038;
+      --text-soft: #7a6f64;
+      --line: #ece3d7;
+      --serif: 'Fraunces', 'Noto Serif TC', Georgia, serif;
+      --sans: 'Nunito Sans', 'Noto Serif TC', -apple-system, 'Segoe UI', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      color: var(--text);
+      background: var(--cream);
+      line-height: 1.85;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+    .container-narrow { max-width: 620px; }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--terracotta); font-weight: 700; margin-bottom: 16px;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250, 246, 240, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto; padding: 16px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+    .brand-logo {
+      height: 38px; width: 38px; border-radius: 50%;
+      background: var(--terracotta); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      padding: 9px;
+    }
+    .brand-logo svg { width: 100%; height: 100%; }
+    .brand-name { font-family: var(--serif); font-size: 1.35rem; color: var(--text); font-weight: 500; }
+    .brand-name strong { color: var(--terracotta); font-weight: 600; }
+    .nav-right { display: flex; align-items: center; gap: 4px; }
+    .nav-links a {
+      margin-left: 22px; text-decoration: none; color: var(--text-soft);
+      font-size: 0.9rem; font-weight: 600; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--terracotta); }
+
+    .lang-toggle {
+      margin-left: 22px; display: inline-flex;
+      border: 1px solid var(--line); border-radius: 22px;
+      overflow: hidden; font-size: 0.78rem; background: var(--surface);
+    }
+    .lang-toggle button {
+      background: transparent; border: none; cursor: pointer;
+      padding: 6px 14px; color: var(--text-soft); font-weight: 700;
+      font-family: var(--sans); transition: all 0.2s;
+    }
+    .lang-toggle button.active { background: var(--terracotta); color: #fff; }
+
+    /* Hero */
+    .hero {
+      position: relative; overflow: hidden;
+      padding: 108px 32px 96px;
+      background:
+        radial-gradient(ellipse at 78% 30%, rgba(193,123,92,0.1), transparent 55%),
+        radial-gradient(ellipse at 15% 80%, rgba(125,138,106,0.09), transparent 50%),
+        linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+    }
+    .hero-content { max-width: 1120px; margin: 0 auto; width: 100%; position: relative; z-index: 2; }
+    .hero-title {
+      font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.6rem);
+      color: var(--text); line-height: 1.22; margin-bottom: 24px;
+      font-weight: 500; letter-spacing: -0.01em;
+    }
+    .hero-title em { font-style: italic; color: var(--terracotta); }
+    .hero-tagline {
+      font-family: var(--serif); font-style: italic;
+      font-size: 1.3rem; color: var(--terracotta-deep); margin-bottom: 22px;
+    }
+    .hero-subtitle {
+      font-size: 1.12rem; color: var(--text-soft);
+      max-width: 620px; margin-bottom: 40px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-block;
+      background: var(--terracotta); color: #fff;
+      padding: 15px 38px; border-radius: 40px;
+      text-decoration: none; font-size: 1rem; font-weight: 700;
+      border: none; cursor: pointer;
+      transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+    }
+    .btn-primary:hover {
+      background: var(--terracotta-deep);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(193,123,92,0.3);
+    }
+    .btn-ghost {
+      display: inline-block;
+      background: transparent; color: var(--text);
+      padding: 15px 32px; border-radius: 40px;
+      text-decoration: none; font-size: 1rem; font-weight: 700;
+      border: 1.5px solid var(--clay); cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-ghost:hover { background: var(--terracotta-soft); border-color: var(--terracotta); color: var(--terracotta-deep); }
+
+    /* Section */
+    .section { padding: 104px 0; }
+    .section-alt { background: var(--surface); }
+    .section-head { text-align: center; max-width: 720px; margin: 0 auto; }
+    .section-title {
+      font-family: var(--serif); font-size: 2.2rem; font-weight: 500;
+      color: var(--text); margin-bottom: 18px; letter-spacing: -0.01em; line-height: 1.35;
+    }
+    .section-title em { font-style: italic; color: var(--terracotta); }
+    .section-text { font-size: 1.08rem; color: var(--text-soft); }
+    .section-text + .section-text { margin-top: 18px; }
+
+    /* Philosophy highlight line */
+    .from-to {
+      display: inline-flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      justify-content: center; margin-top: 40px;
+      font-family: var(--serif); font-size: 1.2rem; color: var(--text);
+    }
+    .from-to .tag-old {
+      background: var(--cream-2); color: var(--text-soft);
+      padding: 8px 20px; border-radius: 30px; border: 1px dashed var(--clay);
+      font-style: italic;
+    }
+    .from-to .arrow { color: var(--terracotta); font-size: 1.4rem; }
+    .from-to .tag-new {
+      background: var(--terracotta-soft); color: var(--terracotta-deep);
+      padding: 8px 20px; border-radius: 30px; font-weight: 600;
+    }
+
+    /* Sub-head divider (within merged About section) */
+    .subhead {
+      text-align: center; max-width: 720px; margin: 96px auto 0;
+      padding-top: 64px; border-top: 1px solid var(--line);
+    }
+    .subhead .section-title { font-size: 1.9rem; margin-bottom: 0; }
+
+    /* Neuro stats */
+    .neuro-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px; margin-top: 62px;
+    }
+    .neuro-card {
+      background: var(--cream); border: 1px solid var(--line);
+      border-radius: 20px; padding: 34px 28px; text-align: center;
+      transition: transform 0.28s, box-shadow 0.28s;
+    }
+    .neuro-card:hover { transform: translateY(-6px); box-shadow: 0 16px 38px rgba(74,64,56,0.09); }
+    .neuro-name { font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--terracotta); font-weight: 700; margin-bottom: 10px; }
+    .neuro-num { font-family: var(--serif); font-size: 2rem; font-weight: 500; color: var(--text); line-height: 1.1; margin-bottom: 8px; }
+    .neuro-desc { font-size: 0.92rem; color: var(--text-soft); }
+
+    /* Narrative concept cards */
+    .cards {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px; margin-top: 56px;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 22px; padding: 40px 32px;
+      transition: transform 0.28s, box-shadow 0.28s;
+    }
+    .section-alt .card { background: var(--cream); }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(74,64,56,0.09); }
+    .card-icon {
+      width: 54px; height: 54px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 22px;
+    }
+    .card-icon svg { width: 26px; height: 26px; }
+    .ic-terra { background: var(--terracotta-soft); color: var(--terracotta); }
+    .ic-olive { background: var(--olive-soft); color: var(--olive); }
+    .ic-sand { background: var(--sand-soft); color: var(--clay); }
+    .card h3 { font-family: var(--serif); font-weight: 500; font-size: 1.3rem; color: var(--text); margin-bottom: 6px; }
+    .card .card-sub { font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--terracotta); font-weight: 700; margin-bottom: 14px; }
+    .card p { color: var(--text-soft); font-size: 0.98rem; }
+
+    /* Mission Vision Values */
+    .mvv-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 26px; margin-top: 44px;
+    }
+    .mvv {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 22px; padding: 40px 34px;
+      transition: transform 0.28s, box-shadow 0.28s;
+    }
+    .mvv:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(74,64,56,0.09); }
+    .mvv-label {
+      font-family: var(--serif); font-size: 1.6rem; font-weight: 500;
+      color: var(--terracotta); margin-bottom: 16px;
+    }
+    .mvv p { color: var(--text-soft); font-size: 0.98rem; }
+    .value-pills { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+    .value-pill {
+      background: var(--terracotta-soft); color: var(--terracotta-deep);
+      padding: 10px 24px; border-radius: 30px; font-weight: 700;
+      font-family: var(--serif); font-size: 1.1rem;
+    }
+
+    /* Services */
+    .services-wrap { display: flex; flex-direction: column; gap: 32px; margin-top: 56px; }
+    .service-block {
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 24px; padding: 44px 40px;
+      transition: transform 0.28s, box-shadow 0.28s;
+    }
+    .section-alt .service-block { background: var(--cream); }
+    .service-block:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(74,64,56,0.09); }
+    .service-head { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .service-icon { width: 52px; height: 52px; border-radius: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .service-icon svg { width: 26px; height: 26px; }
+    .service-title { font-family: var(--serif); font-weight: 500; font-size: 1.45rem; color: var(--text); }
+    .service-desc { color: var(--text-soft); font-size: 1rem; }
+    .service-sub {
+      font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--terracotta); font-weight: 700; margin: 26px 0 16px;
+    }
+    .service-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 30px; }
+    .service-list li { position: relative; padding-left: 24px; color: var(--text); font-size: 0.96rem; line-height: 1.6; }
+    .service-list li::before { content: ""; position: absolute; left: 4px; top: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--terracotta); }
+    .topics-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .topics-list li {
+      position: relative; padding: 14px 20px 14px 46px;
+      background: var(--cream); border: 1px solid var(--line); border-radius: 14px;
+      color: var(--text); font-size: 0.94rem; line-height: 1.55;
+    }
+    .section-alt .topics-list li { background: var(--surface); }
+    .topics-list li::before {
+      content: ""; position: absolute; left: 20px; top: 20px;
+      width: 8px; height: 8px; border-radius: 2px; background: var(--olive); transform: rotate(45deg);
+    }
+
+    /* Quote */
+    .quote-band {
+      background: linear-gradient(135deg, var(--olive) 0%, #6d7a5b 100%);
+      padding: 92px 32px; text-align: center; position: relative; overflow: hidden;
+    }
+    .quote-band::before {
+      content: "\201C"; position: absolute; top: -10px; left: 50%;
+      transform: translateX(-50%); font-family: var(--serif);
+      font-size: 11rem; color: rgba(255,255,255,0.13); line-height: 1;
+    }
+    .quote-band blockquote {
+      max-width: 760px; margin: 0 auto; position: relative;
+      font-family: var(--serif); font-size: 1.6rem; line-height: 1.6;
+      color: #fff; font-weight: 400; font-style: italic;
+    }
+    .quote-band cite {
+      display: block; margin-top: 24px; font-style: normal; font-family: var(--sans);
+      font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--olive-soft); font-weight: 700;
+    }
+
+    /* Team */
+    .team-block {
+      margin-top: 50px; background: var(--surface); border: 1px solid var(--line);
+      border-radius: 24px; padding: 48px 44px;
+    }
+    .section-alt .team-block { background: var(--cream); }
+    .team-block p { font-size: 1.06rem; color: var(--text-soft); }
+    .team-roles {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px; margin-top: 38px;
+    }
+    .role {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--cream); border: 1px solid var(--line);
+      border-radius: 16px; padding: 20px 22px;
+    }
+    .section-alt .role { background: var(--surface); }
+    .role-badge {
+      flex-shrink: 0; width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .role-badge svg { width: 22px; height: 22px; }
+    .role-title { font-family: var(--serif); font-weight: 500; font-size: 1.05rem; color: var(--text); }
+
+    /* Form */
+    .contact-form { margin-top: 50px; display: flex; flex-direction: column; gap: 22px; }
+    .contact-form label {
+      display: flex; flex-direction: column; gap: 8px;
+      font-size: 0.84rem; font-weight: 700; letter-spacing: 0.02em; color: var(--text);
+    }
+    .contact-form input, .contact-form textarea {
+      padding: 14px 18px; border: 1.5px solid var(--line);
+      border-radius: 14px; font-family: var(--sans); font-size: 1rem;
+      background: var(--surface); color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .contact-form input:focus, .contact-form textarea:focus {
+      outline: none; border-color: var(--terracotta);
+      box-shadow: 0 0 0 3px rgba(193,123,92,0.14);
+    }
+    .contact-form button { align-self: flex-start; margin-top: 4px; }
+
+    /* Direct contact chips */
+    .contact-methods { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-top: 44px; }
+    .contact-chip {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 40px; padding: 12px 24px 12px 14px;
+      text-decoration: none; color: var(--text); font-weight: 700; font-size: 0.98rem;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .contact-chip:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(74,64,56,0.1); }
+    .chip-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .chip-icon svg { width: 22px; height: 22px; }
+    .chip-email .chip-icon { background: var(--terracotta-soft); color: var(--terracotta); }
+    .chip-wa .chip-icon { background: var(--whatsapp); color: #fff; }
+    .chip-wa:hover { border-color: var(--whatsapp); }
+    .chip-text { display: flex; flex-direction: column; line-height: 1.3; }
+    .chip-label { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft); font-weight: 700; }
+    .chip-value { font-size: 1rem; color: var(--text); font-weight: 700; }
+
+    /* Floating WhatsApp */
+    .wa-float {
+      position: fixed; bottom: 26px; right: 26px; z-index: 200;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: var(--whatsapp); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 22px rgba(37,211,102,0.45);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .wa-float:hover { transform: scale(1.08); box-shadow: 0 12px 28px rgba(37,211,102,0.55); }
+    .wa-float svg { width: 30px; height: 30px; }
+
+    /* Footer */
+    .footer { background: var(--text); color: #d8cec2; text-align: center; padding: 44px 32px; font-size: 0.9rem; }
+    .footer strong { color: var(--sand); font-family: var(--serif); font-weight: 500; }
+    .footer a { color: var(--sand-soft); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 640px) {
+      .nav-links a { margin-left: 12px; font-size: 0.8rem; }
+      .lang-toggle { margin-left: 10px; }
+      .section { padding: 72px 0; }
+      .container { padding: 0 24px; }
+      .quote-band blockquote { font-size: 1.3rem; }
+      .contact-chip { width: 100%; justify-content: flex-start; }
+      .team-block { padding: 34px 26px; }
+      .service-block { padding: 34px 26px; }
+      .subhead { margin-top: 64px; padding-top: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-inner">
+      <a href="#hero" class="brand">
+        <span class="brand-logo">
+          <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7"
+               stroke-linecap="round" stroke-linejoin="round" aria-label="re-seND logo">
+            <path d="M12 26 L88 26"/>
+            <path d="M12 26 L50 56"/>
+            <path d="M88 26 L60 88"/>
+            <path d="M50 56 L60 88"/>
+          </svg>
+        </span>
+        <span class="brand-name">re-se<strong>ND</strong></span>
+      </a>
+      <div class="nav-right">
+        <nav class="nav-links">
+          <a href="#about" data-en="About" data-zh="理念">About</a>
+          <a href="#neuro" data-en="Neurodiversity" data-zh="腦神經多元">Neurodiversity</a>
+          <a href="#narrative" data-en="Narrative Practice" data-zh="敘事實踐">Narrative Practice</a>
+          <a href="#services" data-en="Services" data-zh="服務">Services</a>
+          <a href="#team" data-en="Team" data-zh="團隊">Team</a>
+          <a href="#contact" data-en="Contact" data-zh="聯絡">Contact</a>
+        </nav>
+        <div class="lang-toggle">
+          <button id="btn-en" onclick="setLang('en')">EN</button>
+          <button id="btn-zh" class="active" onclick="setLang('zh')">中</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="hero" class="hero">
+    <div class="hero-content">
+      <span class="eyebrow" data-en="Professional Development · Narrative Practice × Neurodiversity" data-zh="專業發展簡介 · 敘事實踐 × 腦神經多元">專業發展簡介 · 敘事實踐 × 腦神經多元</span>
+      <h1 class="hero-title"
+        data-en="From SEN Labels<br>to <em>ND Stories</em>"
+        data-zh="從特殊教育需要標籤<br>到<em>腦神經多元故事</em>">從特殊教育需要標籤<br>到<em>腦神經多元故事</em></h1>
+      <p class="hero-tagline" data-en="Narrative Practice × Neurodiversity" data-zh="敘事實踐 × 腦神經多元">敘事實踐 × 腦神經多元</p>
+      <p class="hero-subtitle"
+        data-en="re-seND is a professional team grounded in narrative practice and the neurodiversity paradigm — reframing difference, uncovering overlooked strengths, and re-authoring life stories that are not confined by labels."
+        data-zh="re-seND 是一支以敘事實踐及腦神經多元理念為本的專業團隊，致力重新理解差異、發掘被忽略的力量，與孩子、家庭及同行者一起重述不被標籤限制的生命故事。">re-seND 是一支以敘事實踐及腦神經多元理念為本的專業團隊，致力重新理解差異、發掘被忽略的力量，與孩子、家庭及同行者一起重述不被標籤限制的生命故事。</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary" data-en="Get in touch" data-zh="與我們聯繫">與我們聯繫</a>
+        <a href="#about" class="btn-ghost" data-en="Our philosophy" data-zh="了解理念">了解理念</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About: Philosophy + Mission/Vision/Values -->
+  <section id="about" class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" data-en="Our Philosophy" data-zh="我們的理念">我們的理念</span>
+        <h2 class="section-title" data-en="Reframing <em>Difference</em>" data-zh="重新理解<em>差異</em>">重新理解<em>差異</em></h2>
+        <p class="section-text"
+          data-en="re-seND is a professional team grounded in narrative practice and the neurodiversity paradigm. We are committed to shifting public understanding from the label of 'special educational needs' toward an appreciation of 'neurodiversity' — rethinking difference, uncovering overlooked strengths, and opening up more diverse possibilities."
+          data-zh="re-seND 是一支專業團隊，以敘事實踐及腦神經多元理念為本。我們致力讓大眾由「特殊學習需要」的標籤，轉向「腦神經多元」的理解，重新理解差異，發掘被忽略的力量，傳遞更多元的可能。">re-seND 是一支專業團隊，以敘事實踐及腦神經多元理念為本。我們致力讓大眾由「特殊學習需要」的標籤，轉向「腦神經多元」的理解，重新理解差異，發掘被忽略的力量，傳遞更多元的可能。</p>
+        <p class="section-text"
+          data-en="Together with children, families, and fellow travellers, we re-author life stories that are not confined by labels."
+          data-zh="並與孩子、家庭及同行者一起，重述不被標籤限制的生命故事。">並與孩子、家庭及同行者一起，重述不被標籤限制的生命故事。</p>
+        <div class="from-to">
+          <span class="tag-old" data-en="SEN labels" data-zh="SEN 標籤">SEN labels</span>
+          <span class="arrow">&rarr;</span>
+          <span class="tag-new" data-en="ND stories" data-zh="ND 生命故事">ND stories</span>
+        </div>
+      </div>
+
+      <div class="subhead">
+        <span class="eyebrow" data-en="Mission · Vision · Values" data-zh="使命 · 願景 · 價值觀">使命 · 願景 · 價值觀</span>
+        <h3 class="section-title" data-en="What Drives <em>Us</em>" data-zh="我們的<em>方向</em>">我們的<em>方向</em></h3>
+      </div>
+      <div class="mvv-grid">
+        <div class="mvv">
+          <div class="mvv-label" data-en="Mission" data-zh="使命">使命</div>
+          <p data-en="Grounded in neurodiversity and combined with the professional practice of narrative therapy, we provide empathetic, evidence-based, and culturally sensitive training and support for individuals, families, and service systems. We value the professional development and clinical experience of every frontline colleague, and through systematic training and supervision we deepen understanding, practice, and professional transformation."
+             data-zh="我們致力於以腦神經多元為基礎，結合敘事治療的專業實踐，為個人、家庭及服務系統提供具同理心、實證基礎及文化敏感度的專業培訓與支援。我們重視每位前線同工的專業發展與臨床經驗，並透過系統化培訓與督導，促進理解、深化實踐與專業轉化。">我們致力於以腦神經多元為基礎，結合敘事治療的專業實踐，為個人、家庭及服務系統提供具同理心、實證基礎及文化敏感度的專業培訓與支援。我們重視每位前線同工的專業發展與臨床經驗，並透過系統化培訓與督導，促進理解、深化實踐與專業轉化。</p>
+        </div>
+        <div class="mvv">
+          <div class="mvv-label" data-en="Vision" data-zh="願景">願景</div>
+          <p data-en="We aspire to become a training platform of professional depth and forward-looking vision, nurturing more helping professionals who can practise through a neurodiversity and narrative lens, and advancing a clinical service culture of greater understanding, reflection, and inclusion. We believe that when helpers are continually equipped and inspired, they can extend their positive impact on individuals, families, and communities."
+             data-zh="我們期望成為一個具專業深度與前瞻視野的培訓平台，培育更多能以腦神經多元與敘事取向實踐的專業助人工作者，推動更具理解、反思與共融精神的臨床服務文化。我們相信，當助人者持續被裝備與啟發，便能進一步擴展對個人、家庭與社群的正面影響。">我們期望成為一個具專業深度與前瞻視野的培訓平台，培育更多能以腦神經多元與敘事取向實踐的專業助人工作者，推動更具理解、反思與共融精神的臨床服務文化。我們相信，當助人者持續被裝備與啟發，便能進一步擴展對個人、家庭與社群的正面影響。</p>
+        </div>
+        <div class="mvv">
+          <div class="mvv-label" data-en="Values" data-zh="價值觀">價值觀</div>
+          <div class="value-pills">
+            <span class="value-pill" data-en="Professionalism" data-zh="專業">專業</span>
+            <span class="value-pill" data-en="Inclusion" data-zh="共融">共融</span>
+            <span class="value-pill" data-en="Empowerment" data-zh="賦權">賦權</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Neurodiversity -->
+  <section id="neuro" class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" data-en="Neurodiversity" data-zh="腦神經多元">腦神經多元</span>
+        <h2 class="section-title" data-en="A Natural State to be <em>Valued</em>" data-zh="一種值得<em>肯定</em>的自然狀態">一種值得<em>肯定</em>的自然狀態</h2>
+        <p class="section-text"
+          data-en="We reject the notion that there is a single 'normal' or 'healthy' neurological experience. We regard neurodiversity as a natural state that should be affirmed and valued. Our focus is on the challenges and strengths that different neurodivergent conditions — such as ADHD, learning differences, or autism spectrum conditions — bring to key processes like learning, cognition, and social awareness."
+          data-zh="我們反對存在單一「正常」或「健康」神經體驗的觀點，並認為腦神經多元是一種自然狀態，應該受到肯定和重視。我們關注不同腦神經多元的情況，例如注意力不足過動症（ADHD）、學習障礙或自閉症譜系障礙，在學習、認知及社會意識等關鍵過程中的挑戰與優勢。">我們反對存在單一「正常」或「健康」神經體驗的觀點，並認為腦神經多元是一種自然狀態，應該受到肯定和重視。我們關注不同腦神經多元的情況，例如注意力不足過動症（ADHD）、學習障礙或自閉症譜系障礙，在學習、認知及社會意識等關鍵過程中的挑戰與優勢。</p>
+      </div>
+      <div class="neuro-stats">
+        <div class="neuro-card">
+          <div class="neuro-name">Neurodivergent</div>
+          <div class="neuro-num" data-en="1.2–1.6 billion" data-zh="約 12–16 億">約 12–16 億</div>
+          <div class="neuro-desc" data-en="~15–20% of the global population" data-zh="佔全球人口 15%–20%">佔全球人口 15%–20%</div>
+        </div>
+        <div class="neuro-card">
+          <div class="neuro-name">Autism</div>
+          <div class="neuro-num" data-en="~78 million" data-zh="約 7,800 萬">約 7,800 萬</div>
+          <div class="neuro-desc" data-en="~1 in every 100 children worldwide" data-zh="全球每 100 名兒童約有 1 名">全球每 100 名兒童約有 1 名</div>
+        </div>
+        <div class="neuro-card">
+          <div class="neuro-name">ADHD</div>
+          <div class="neuro-num" data-en="129 million+" data-zh="超過 1.29 億">超過 1.29 億</div>
+          <div class="neuro-desc" data-en="~1 in every 9 children worldwide" data-zh="全球每 9 名兒童約有 1 名">全球每 9 名兒童約有 1 名</div>
+        </div>
+        <div class="neuro-card">
+          <div class="neuro-name">Dyslexia</div>
+          <div class="neuro-num" data-en="~1.6 billion" data-zh="約 16 億">約 16 億</div>
+          <div class="neuro-desc" data-en="~1 in every 5 children worldwide" data-zh="全球每 5 名兒童約有 1 名">全球每 5 名兒童約有 1 名</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Narrative Practice -->
+  <section id="narrative" class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" data-en="Narrative Practice" data-zh="敘事實踐">敘事實踐</span>
+        <h2 class="section-title" data-en="The Person is Not the <em>Problem</em>" data-zh="人與問題是<em>分開的</em>">人與問題是<em>分開的</em></h2>
+        <p class="section-text"
+          data-en="Narrative Practice is an approach to therapy and counselling whose core spirit is that 'the person is not the problem — the problem is the problem.' Rather than seeing people as problems in themselves, it helps them discover their own resources and reclaim authorship of their lives through storytelling and re-writing their life scripts."
+          data-zh="敘事實踐（Narrative Practice）是一種心理治療與輔導方法，核心精神為「人與問題是分開的」。它不把人視為問題本身，而是透過說故事與重新改寫生命腳本，協助當事人發掘個人資源，找回生命的主動權。">敘事實踐（Narrative Practice）是一種心理治療與輔導方法，核心精神為「人與問題是分開的」。它不把人視為問題本身，而是透過說故事與重新改寫生命腳本，協助當事人發掘個人資源，找回生命的主動權。</p>
+        <p class="section-text"
+          data-en="Combining Narrative Practice with Neurodiversity means treating brain differences — such as autism, ADHD, or dyslexia — as 'natural differences' rather than 'deficits.' By re-authoring personal stories, we can effectively break down social stigma and help people build self-identity."
+          data-zh="「敘事實踐」與「腦神經多元」的結合，旨在將自閉症、ADHD 或讀寫障礙等大腦差異視為「自然的差異」而非「缺陷」。透過重構個人故事，能有效打破社會污名，讓當事人建立自我認同。">「敘事實踐」與「腦神經多元」的結合，旨在將自閉症、ADHD 或讀寫障礙等大腦差異視為「自然的差異」而非「缺陷」。透過重構個人故事，能有效打破社會污名，讓當事人建立自我認同。</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <div class="card-icon ic-terra">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          </div>
+          <h3 data-en="Externalization" data-zh="外化問題">外化問題</h3>
+          <div class="card-sub">Externalization</div>
+          <p data-en="Separating the person from the problem, so that difficulties can be examined and addressed without defining who someone is."
+             data-zh="將人與問題分開，讓困難可以被檢視與處理，而不必定義一個人的本質。">將人與問題分開，讓困難可以被檢視與處理，而不必定義一個人的本質。</p>
+        </article>
+        <article class="card">
+          <div class="card-icon ic-sand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+          </div>
+          <h3 data-en="Re-authoring" data-zh="重寫故事">重寫故事</h3>
+          <div class="card-sub">Re-authoring</div>
+          <p data-en="Re-writing life scripts to surface overlooked strengths and preferred identities beyond the dominant, problem-saturated story."
+             data-zh="重新改寫生命腳本，發掘被主流、被問題主導的故事所忽略的力量與理想身份。">重新改寫生命腳本，發掘被主流、被問題主導的故事所忽略的力量與理想身份。</p>
+        </article>
+        <article class="card">
+          <div class="card-icon ic-olive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 data-en="Co-create" data-zh="共創">共創</h3>
+          <div class="card-sub">Co-create</div>
+          <p data-en="Working alongside individuals, families, and communities to build new, hopeful meanings and possibilities together."
+             data-zh="與個人、家庭及社群同行，一起共創新的、充滿希望的意義與可能。">與個人、家庭及社群同行，一起共創新的、充滿希望的意義與可能。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote band -->
+  <section class="quote-band">
+    <blockquote
+      data-en="When we recognise the value in every mind, we unlock potential that benefits us all."
+      data-zh="當我們看見每一種心智的價值，便釋放了讓所有人受惠的無限潛能。">當我們看見每一種心智的價值，便釋放了讓所有人受惠的無限潛能。</blockquote>
+    <cite data-en="— The re-seND Team" data-zh="— re-seND 團隊">— re-seND 團隊</cite>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="section section-alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" data-en="What We Offer" data-zh="我們的服務">我們的服務</span>
+        <h2 class="section-title" data-en="Our <em>Services</em>" data-zh="我們的<em>服務</em>">我們的<em>服務</em></h2>
+        <p class="section-text"
+          data-en="From public education to professional training, counselling, and consultation — our work bridges research and practice to support individuals, families, schools, and service systems."
+          data-zh="由公眾教育到專業培訓、輔導及諮詢，我們的工作連結研究與實踐，支援個人、家庭、學校及服務系統。">由公眾教育到專業培訓、輔導及諮詢，我們的工作連結研究與實踐，支援個人、家庭、學校及服務系統。</p>
+      </div>
+
+      <div class="services-wrap">
+
+        <!-- Service 1: Public Education & Knowledge Transfer -->
+        <div class="service-block">
+          <div class="service-head">
+            <div class="service-icon ic-terra">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+            </div>
+            <h3 class="service-title" data-en="Public Education & Knowledge Transfer" data-zh="公眾教育及知識轉移">公眾教育及知識轉移</h3>
+          </div>
+          <p class="service-desc"
+            data-en="We believe change happens not only within individuals and families, but also in how society comes to understand difference. Through public education, cross-sector collaboration, and knowledge transfer, we advance understanding of and dialogue around neurodiversity and narrative practice."
+            data-zh="我們相信，改變不僅發生於個人或家庭之中，也發生在社會如何理解差異的過程裡。我們透過公眾教育、跨界別合作及知識轉移工作，推動對腦神經多元以及敘事實踐的理解與對話。">我們相信，改變不僅發生於個人或家庭之中，也發生在社會如何理解差異的過程裡。我們透過公眾教育、跨界別合作及知識轉移工作，推動對腦神經多元以及敘事實踐的理解與對話。</p>
+
+          <div class="service-sub" data-en="Services include" data-zh="服務包括">服務包括</div>
+          <ul class="service-list">
+            <li data-en="Public talks and community education events" data-zh="公眾講座及社區教育活動">公眾講座及社區教育活動</li>
+            <li data-en="Neurodiversity advocacy and promotion" data-zh="腦神經多元倡議及推廣">腦神經多元倡議及推廣</li>
+            <li data-en="Thematic sharing for schools and organisations" data-zh="學校及機構專題分享">學校及機構專題分享</li>
+            <li data-en="Neurodiversity research collaboration" data-zh="腦神經多元研究合作">腦神經多元研究合作</li>
+          </ul>
+
+          <div class="service-sub" data-en="Past topics" data-zh="過往主題">過往主題</div>
+          <ul class="topics-list">
+            <li data-en="Interpersonal Relationships and Neurodiversity in Tertiary Institutions: Friendship, Dating, and Community" data-zh="大專院校中的腦神經多元：友誼、戀愛與社群互動">大專院校中的腦神經多元：友誼、戀愛與社群互動</li>
+            <li data-en="Transporting the Neurodiversity Affirming Strategies: Multiple Family Narrative Therapy" data-zh="「童」心協力：腦神經多元視角下的多家庭敘事治療">「童」心協力：腦神經多元視角下的多家庭敘事治療</li>
+            <li data-en="Re-authoring Clinical Practice: Multiple Family Narrative Therapy as a Path Toward Neurodiversity-Affirming Work" data-zh="重塑臨床實踐：從多家庭敘事治療邁向腦神經多元的實務路徑">重塑臨床實踐：從多家庭敘事治療邁向腦神經多元的實務路徑</li>
+            <li data-en="What is Neurodiversity? A New Way of Understanding Difference" data-zh="探索腦神經多元：差異的新視角">探索腦神經多元：差異的新視角</li>
+            <li data-en="From Ableism to Dignity: Rebuilding Neurodiversity-Affirming Public Systems" data-zh="公共系統新願景：健全主義之外的尊嚴與腦神經多元">公共系統新願景：健全主義之外的尊嚴與腦神經多元</li>
+            <li data-en="From Accommodation to Co-Creation: How AI+ Is Reimagining Learning for Neurodiverse Students in Higher Education" data-zh="從調適到共創：AI+ 開啟腦神經多元學生在高等教育的新學習方式">從調適到共創：AI+ 開啟腦神經多元學生在高等教育的新學習方式</li>
+          </ul>
+        </div>
+
+        <!-- Service 2: Professional Training & Certification -->
+        <div class="service-block">
+          <div class="service-head">
+            <div class="service-icon ic-sand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <h3 class="service-title" data-en="Professional Training & Certification Courses" data-zh="專業培訓及認證課程">專業培訓及認證課程</h3>
+          </div>
+          <p class="service-desc"
+            data-en="We turn research and practice experience into professional knowledge, supporting educators, social service workers, and mental health practitioners to develop reflective, evidence-based, and strengths-based practice."
+            data-zh="我們致力將研究及實踐經驗轉化為專業知識，支援教育、社會服務及心理健康工作者發展具反思性、實證基礎及優勢為本的實踐能力。">我們致力將研究及實踐經驗轉化為專業知識，支援教育、社會服務及心理健康工作者發展具反思性、實證基礎及優勢為本的實踐能力。</p>
+
+          <div class="service-sub" data-en="Courses & training include" data-zh="課程及培訓包括">課程及培訓包括</div>
+          <ul class="service-list">
+            <li data-en="Neurodiversity concepts and affirming practice" data-zh="腦神經多元理念與肯定實踐">腦神經多元理念與肯定實踐</li>
+            <li data-en="Neurodiversity and identity development" data-zh="腦神經多元與身份認同發展">腦神經多元與身份認同發展</li>
+            <li data-en="Communication and relationship building for neurodivergent families" data-zh="支援腦神經多元家庭的溝通與關係建立">支援腦神經多元家庭的溝通與關係建立</li>
+            <li data-en="Applying narrative practice in education and social services" data-zh="敘事實踐於教育及社會服務中的應用">敘事實踐於教育及社會服務中的應用</li>
+            <li data-en="Narrative group work: application with SEN students" data-zh="敘事小組工作：特殊學習需要學童應用">敘事小組工作：特殊學習需要學童應用</li>
+            <li data-en="Narrative group work: re-authoring identity and uncovering strength stories" data-zh="敘事小組工作：重塑身份認同與發掘優勢故事">敘事小組工作：重塑身份認同與發掘優勢故事</li>
+            <li data-en="Multiple family narrative therapy: fostering family connection and mutual support" data-zh="多家庭敘事治療：促進家庭連結與互助實踐">多家庭敘事治療：促進家庭連結與互助實踐</li>
+          </ul>
+        </div>
+
+        <!-- Service 3: Counselling & Consultation -->
+        <div class="service-block">
+          <div class="service-head">
+            <div class="service-icon ic-olive">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <h3 class="service-title" data-en="Counselling & Consultation" data-zh="輔導及諮詢">輔導及諮詢</h3>
+          </div>
+          <p class="service-desc"
+            data-en="Grounded in narrative practice and the neurodiversity paradigm, we provide professional support to children, young people, families, schools, and social service organisations. We work alongside stakeholders to explore the abilities, values, and hopes obscured by problems, fostering growth and transformation across individuals, families, and service systems."
+            data-zh="我們以敘事實踐及腦神經多元理念為基礎，為兒童、青年、家庭、學校及社會服務機構提供專業支援。我們重視與不同持份者共同探索被問題掩蓋的能力、價值與希望，促進個人、家庭及服務系統的成長與轉化。">我們以敘事實踐及腦神經多元理念為基礎，為兒童、青年、家庭、學校及社會服務機構提供專業支援。我們重視與不同持份者共同探索被問題掩蓋的能力、價值與希望，促進個人、家庭及服務系統的成長與轉化。</p>
+
+          <div class="service-sub" data-en="Services include" data-zh="服務包括">服務包括</div>
+          <ul class="service-list">
+            <li data-en="Individual and family consultation or counselling" data-zh="個人及家庭諮詢或輔導">個人及家庭諮詢或輔導</li>
+            <li data-en="Parent support and family companionship" data-zh="家長支援與家庭同行">家長支援與家庭同行</li>
+            <li data-en="Multiple family narrative therapy" data-zh="多家庭敘事治療">多家庭敘事治療</li>
+            <li data-en="Groups for neurodivergent children and adolescents" data-zh="腦神經多元兒童及青少年小組">腦神經多元兒童及青少年小組</li>
+            <li data-en="Parent and caregiver groups" data-zh="家長及照顧者小組">家長及照顧者小組</li>
+            <li data-en="School consultation and case support" data-zh="學校諮詢及個案支援">學校諮詢及個案支援</li>
+            <li data-en="Consultancy and service development support for social service organisations" data-zh="社會服務機構顧問及服務發展支援">社會服務機構顧問及服務發展支援</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section id="team" class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow" data-en="Meet Our Team" data-zh="認識我們的團隊">認識我們的團隊</span>
+        <h2 class="section-title" data-en="A Multidisciplinary <em>Team</em>" data-zh="跨專業的<em>團隊</em>">跨專業的<em>團隊</em></h2>
+      </div>
+      <div class="team-block">
+        <p
+          data-en="re-seND is made up of professionals with extensive experience in research, clinical practice, and professional training, with deep expertise in neurodiversity, mental health and wellbeing, and narrative-oriented practice. The team has long been engaged in research, intervention, and service development for neurodivergent individuals and their families — spanning multiple family narrative therapy, family therapy, narrative group work, relationship and wellbeing promotion, and social work practice development. Members bring complementary strengths across research, clinical work, supervision, and training, forming a professional team that combines academic depth, practical acuity, and an innovative vision — able to respond to the needs of neurodivergent people and their stakeholders at the individual, family, educational, community, and service-system levels."
+          data-zh="本團隊由具豐富研究、臨床實務及專業培訓經驗的專業人士組成，在腦神經多元、精神健康與福祉，以及敘事取向實踐領域具備深厚專業基礎。團隊長期從事腦神經多元人士及其家庭的研究、介入及服務發展工作，涵蓋多家庭敘事治療、家庭治療、敘事小組工作、關係與福祉促進，以及社會工作實務發展等範疇。成員在研究、臨床、督導及培訓方面各有所長，彼此互補，形成兼具學術深度、實務敏銳度與創新視野的專業團隊，能從個人、家庭、教育、社區及服務系統等不同層面回應腦神經多元人士及相關持份者的需要。">本團隊由具豐富研究、臨床實務及專業培訓經驗的專業人士組成，在腦神經多元、精神健康與福祉，以及敘事取向實踐領域具備深厚專業基礎。團隊長期從事腦神經多元人士及其家庭的研究、介入及服務發展工作，涵蓋多家庭敘事治療、家庭治療、敘事小組工作、關係與福祉促進，以及社會工作實務發展等範疇。成員在研究、臨床、督導及培訓方面各有所長，彼此互補，形成兼具學術深度、實務敏銳度與創新視野的專業團隊，能從個人、家庭、教育、社區及服務系統等不同層面回應腦神經多元人士及相關持份者的需要。</p>
+        <div class="team-roles">
+          <div class="role">
+            <div class="role-badge ic-terra">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="role-title" data-en="Social Worker" data-zh="社工">社工</div>
+          </div>
+          <div class="role">
+            <div class="role-badge ic-sand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            </div>
+            <div class="role-title" data-en="Student Guidance Director" data-zh="學生指導主任">學生指導主任</div>
+          </div>
+          <div class="role">
+            <div class="role-badge ic-olive">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="role-title" data-en="University Professor" data-zh="大學教授">大學教授</div>
+          </div>
+          <div class="role">
+            <div class="role-badge ic-terra">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <div class="role-title" data-en="Marriage & Family Therapist" data-zh="婚姻及家庭治療師">婚姻及家庭治療師</div>
+          </div>
+          <div class="role">
+            <div class="role-badge ic-sand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+            <div class="role-title" data-en="Researcher" data-zh="研究員">研究員</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="section section-alt">
+    <div class="container container-narrow">
+      <div class="section-head">
+        <span class="eyebrow" data-en="Get In Touch" data-zh="與我們聯繫">與我們聯繫</span>
+        <h2 class="section-title" data-en="Contact <em>Us</em>" data-zh="聯絡<em>我們</em>">聯絡<em>我們</em></h2>
+        <p class="section-text"
+          data-en="Reach us directly by email or WhatsApp, or send a message below — we'll reply in confidence."
+          data-zh="您可透過電郵或 WhatsApp 直接聯絡我們，或於下方留言，我們將以保密方式回覆。">您可透過電郵或 WhatsApp 直接聯絡我們，或於下方留言，我們將以保密方式回覆。</p>
+      </div>
+
+      <div class="contact-methods">
+        <a class="contact-chip chip-email" href="mailto:hkresend@gmail.com">
+          <span class="chip-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+          </span>
+          <span class="chip-text">
+            <span class="chip-label" data-en="Email" data-zh="電郵">Email</span>
+            <span class="chip-value">hkresend@gmail.com</span>
+          </span>
+        </a>
+        <a class="contact-chip chip-wa" href="https://wa.me/85291278149" target="_blank" rel="noopener">
+          <span class="chip-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>
+          </span>
+          <span class="chip-text">
+            <span class="chip-label" data-en="WhatsApp / Phone" data-zh="WhatsApp / 電話">WhatsApp / Phone</span>
+            <span class="chip-value">9127 8149</span>
+          </span>
+        </a>
+      </div>
+
+      <form name="contact" class="contact-form" onsubmit="return false;">
+        <label>
+          <span data-en="Name" data-zh="姓名">姓名</span>
+          <input type="text" name="name" required />
+        </label>
+        <label>
+          <span data-en="Email" data-zh="電子郵件">電子郵件</span>
+          <input type="email" name="email" required />
+        </label>
+        <label>
+          <span data-en="How can we help?" data-zh="我們可以如何協助您？">我們可以如何協助您？</span>
+          <textarea name="message" rows="5" required></textarea>
+        </label>
+        <button type="submit" class="btn-primary" data-en="Send Request" data-zh="送出查詢">送出查詢</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p data-en="© 2026 <strong>re-seND</strong>. Narrative Practice × Neurodiversity. &nbsp;·&nbsp; <a href='mailto:hkresend@gmail.com'>hkresend@gmail.com</a> &nbsp;·&nbsp; <a href='https://wa.me/85291278149' target='_blank' rel='noopener'>WhatsApp 9127 8149</a>"
+       data-zh="© 2026 <strong>re-seND</strong>. 敘事實踐 × 腦神經多元。 &nbsp;·&nbsp; <a href='mailto:hkresend@gmail.com'>hkresend@gmail.com</a> &nbsp;·&nbsp; <a href='https://wa.me/85291278149' target='_blank' rel='noopener'>WhatsApp 9127 8149</a>">© 2026 <strong>re-seND</strong>. 敘事實踐 × 腦神經多元。 &nbsp;·&nbsp; <a href="mailto:hkresend@gmail.com">hkresend@gmail.com</a> &nbsp;·&nbsp; <a href="https://wa.me/85291278149" target="_blank" rel="noopener">WhatsApp 9127 8149</a></p>
+  </footer>
+
+  <!-- Floating WhatsApp -->
+  <a class="wa-float" href="https://wa.me/85291278149" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>
+  </a>
+
+  <script>
+    function setLang(lang) {
+      document.querySelectorAll("[data-en]").forEach((el) => {
+        el.innerHTML = el.getAttribute("data-" + lang);
+      });
+      document.documentElement.lang = (lang === "zh") ? "zh-Hant" : "en";
+      document.getElementById("btn-en").classList.toggle("active", lang === "en");
+      document.getElementById("btn-zh").classList.toggle("active", lang === "zh");
+    }
+    setLang("zh");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll(".card, .neuro-card, .mvv, .role, .contact-chip, .service-block").forEach((el) => {
+      el.style.opacity = "0";
+      el.style.transform = "translateY(22px)";
+      el.style.transition = "opacity 0.7s ease, transform 0.7s ease";
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
